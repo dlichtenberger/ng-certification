@@ -1,4 +1,3 @@
-<h4>Template for main page:</h4>
 <div class="container-fluid">
   <div class="well">
     <h2>Enter a zipcode:</h2>
@@ -10,24 +9,42 @@
       [(ngModel)]="zipCodeInput"
     />
     <br />
-    <button class="btn btn-primary" id="addLocationBtn" (click)="addZipCode()">
+    <button
+      class="btn btn-primary"
+      id="addLocationBtn"
+      (click)="addZipCodeInput()"
+    >
       Add location
     </button>
   </div>
   <div>
-    <div *ngFor="let zipCode of zipCodes" class="well flex">
+    <div *ngFor="let row of reports" class="well flex">
       <div>
-        <h3>Rancho Cordova ({{ zipCode }})</h3>
-        <h4>Current conditions: Clouds</h4>
+        <h3>{{ row.report.name }} ({{ row.zipCode }})</h3>
+        <h4>Current conditions: {{ row.report.conditions }}</h4>
         <h4>Temperatures today:</h4>
-        <p>Current 58 - Max 65 - Min 48</p>
+        <p>
+          Current {{ row.report.temperature.current }}
+          <span
+            *ngIf="
+              row.report.temperature.maximum != row.report.temperature.current
+            "
+            >- Max {{ row.report.temperature.maximum }}
+          </span>
+          <span
+            *ngIf="
+              row.report.temperature.minimum != row.report.temperature.current
+            "
+            >- Min {{ row.report.temperature.minimum }}
+          </span>
+        </p>
         <p>
           <a href="/forecast/95742">Show 5-day forecast for Rancho Cordova</a>
         </p>
       </div>
       <div>
-        <span class="close">×</span>
-        <img src="https://www.angulartraining.com/images/weather/sun.png" />
+        <span class="close" (click)="deleteReport(row)">×</span>
+        <img src="{{ row.report.icon }}" />
       </div>
     </div>
 
