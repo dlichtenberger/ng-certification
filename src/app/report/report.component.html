@@ -1,0 +1,23 @@
+<div class="well flex">
+  <div>
+    <h3>{{ report.name }} ({{ zipCode }})</h3>
+    <h4>Current conditions: {{ report.conditions }}</h4>
+    <h4>Temperatures today:</h4>
+    <p>
+      Current {{ report.temperature.current }}
+      <span *ngIf="report.temperature.maximum"
+        >- Max {{ report.temperature.maximum }}
+      </span>
+      <span *ngIf="report.temperature.minimum"
+        >- Min {{ report.temperature.minimum }}
+      </span>
+    </p>
+    <p>
+      <a href="/forecast/95742">Show 5-day forecast for Rancho Cordova</a>
+    </p>
+  </div>
+  <div>
+    <span class="close" (click)="deleteReport(row)">×</span>
+    <img src="{{ report.icon }}" />
+  </div>
+</div>

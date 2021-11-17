@@ -18,35 +18,11 @@
     </button>
   </div>
   <div>
-    <div *ngFor="let row of reports" class="well flex">
-      <div>
-        <h3>{{ row.report.name }} ({{ row.zipCode }})</h3>
-        <h4>Current conditions: {{ row.report.conditions }}</h4>
-        <h4>Temperatures today:</h4>
-        <p>
-          Current {{ row.report.temperature.current }}
-          <span
-            *ngIf="
-              row.report.temperature.maximum != row.report.temperature.current
-            "
-            >- Max {{ row.report.temperature.maximum }}
-          </span>
-          <span
-            *ngIf="
-              row.report.temperature.minimum != row.report.temperature.current
-            "
-            >- Min {{ row.report.temperature.minimum }}
-          </span>
-        </p>
-        <p>
-          <a href="/forecast/95742">Show 5-day forecast for Rancho Cordova</a>
-        </p>
-      </div>
-      <div>
-        <span class="close" (click)="deleteReport(row)">×</span>
-        <img src="{{ row.report.icon }}" />
-      </div>
-    </div>
+    <app-report
+      *ngFor="let row of reports"
+      [zipCode]="row.zipCode"
+      [report]="row.report"
+    ></app-report>
 
     <div class="well flex">
       <div>
