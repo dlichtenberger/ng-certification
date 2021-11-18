@@ -12,7 +12,7 @@ export class AppComponent {
   name = 'Angular';
 
   zipCodeInput = '';
-  reports: WrappedReport[] = [];
+  reports: WeatherReport[] = [];
 
   constructor(
     private localStorage: LocalStorageService,
@@ -33,8 +33,13 @@ export class AppComponent {
     }
   }
 
-  deleteReport(row: WrappedReport) {
-    this.reports.splice(this.reports.indexOf(row), 1);
+  deleteReport(row: WeatherReport) {
+    let index = this.reports.indexOf(row);
+    if (index === -1) {
+      console.warn(`Row not found: ${JSON.stringify(row)}`);
+      return;
+    }
+    this.reports.splice(index, 1);
     this.syncZipCodes();
   }
 
@@ -46,18 +51,16 @@ export class AppComponent {
     this.requestWeatherReport(zipCode);
   }
 
-  private addReport(report: WrappedReport) {
+  private addReport(report: WeatherReport) {
     this.reports.push(report);
     this.reports.sort((a, b) => a.zipCode.localeCompare(b.zipCode));
     this.syncZipCodes();
   }
 
   private requestWeatherReport(zipCode: string) {
-    this.weatherService.loadByZip(zipCode).subscribe({
-      next: (data) => this.addReport({ zipCode: zipCode, report: data }),
-      error: (_error) =>
-        alert(`Failed to retrieve weather information for ZIP code ${zipCode}`),
-    });
+    this.weatherService
+      .loadByZip(zipCode)
+      .subscribe((data) => this.addReport(data));
   }
 
   private syncZipCodes() {
@@ -66,11 +69,6 @@ export class AppComponent {
       this.reports.map((report) => report.zipCode)
     );
   }
-}
-
-interface WrappedReport {
-  zipCode: string;
-  report: WeatherReport;
 }
 
 const STORAGE_ZIP_CODES = 'forecastZipCodes';

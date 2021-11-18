@@ -1,19 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class WeatherService {
-  private readonly APP_ID = '5a4b2d457ecbef9eb2a71e480b947604';
-
-  constructor(private http: HttpClient) {}
+abstract class AbstractWeatherService {
+  constructor(protected http: HttpClient) {}
 
   loadByZip(zipCode: string): Observable<WeatherReport> {
     return this.getReportForZip(zipCode).pipe(
+      // convert successful responses to WeatherReport
       map((response) => ({
+        valid: true,
         zipCode: zipCode,
         name: response.name,
         conditions: response.weather[0].main,
@@ -23,19 +20,82 @@ export class WeatherService {
           maximum: response.main.temp_max,
           current: response.main.temp,
         },
-      }))
+      })),
+
+      // map error responses to 'error' object in result list
+      catchError((error) =>
+        of({
+          valid: false,
+          zipCode: zipCode,
+          errorMessage: `${error.status} - ${error.error?.message}`,
+          name: '',
+          conditions: '',
+          icon: WeatherIcon.SUN,
+          temperature: {
+            minimum: -1,
+            maximum: -1,
+            current: -1,
+          },
+        })
+      )
     );
   }
 
-  private getReportForZip(zipCode: string): Observable<WeatherResponse> {
+  protected abstract getReportForZip(
+    zipCode: string
+  ): Observable<WeatherResponse>;
+
+  protected abstract getForecastForZip(
+    zipCode: string
+  ): Observable<ForecastResponse>;
+}
+
+@Injectable()
+export class WeatherService extends AbstractWeatherService {
+  private readonly API_URL = 'https://api.openweathermap.org/data/2.5';
+  private readonly APP_ID = '5a4b2d457ecbef9eb2a71e480b947604';
+
+  constructor(protected http: HttpClient) {
+    super(http);
+  }
+
+  protected getReportForZip(zipCode: string): Observable<WeatherResponse> {
     return this.http.get<WeatherResponse>(
-      `https://api.openweathermap.org/data/2.5/weather?zip=${zipCode}&appid=${this.APP_ID}&units=imperial`
+      `${this.API_URL}/weather?zip=${zipCode}&appid=${this.APP_ID}&units=imperial`
     );
+  }
+
+  protected getForecastForZip(zipCode: string): Observable<ForecastResponse> {
+    return this.http.get<ForecastResponse>(
+      `${this.API_URL}/forecast?zip=${zipCode}&appid=${this.APP_ID}&units=imperial`
+    );
+  }
+}
+
+@Injectable()
+export class HerokuWeatherService extends AbstractWeatherService {
+  private readonly API_URL = 'https://lp-store.herokuapp.com';
+
+  constructor(protected http: HttpClient) {
+    super(http);
+  }
+
+  protected getReportForZip(zipCode: string): Observable<WeatherResponse> {
+    return this.http.get<WeatherResponse>(
+      `${this.API_URL}/weather?zipCode=${zipCode}`
+    );
+  }
+
+  protected getForecastForZip(zipCode: string): Observable<ForecastResponse> {
+    return of();
   }
 }
 
 export interface WeatherReport {
   zipCode: string;
+  valid: boolean;
+  errorMessage?: string;
+
   name: string;
   conditions: string;
   icon: WeatherIcon;
@@ -44,6 +104,22 @@ export interface WeatherReport {
     maximum: number;
     current: number;
   };
+}
+
+export interface Forecast {
+  zipCode: string;
+  name: string;
+  weather: [
+    {
+      date: Date;
+      conditions: string;
+      icon: WeatherIcon;
+      temperature: {
+        minimum: number;
+        maximum: number;
+      };
+    }
+  ];
 }
 
 export enum WeatherIcon {
@@ -106,4 +182,60 @@ interface WeatherResponse {
   id: number;
   name: string;
   cod: number;
+}
+
+interface ForecastResponse {
+  cod: number;
+  message: number;
+  cnt: number;
+  list: [
+    {
+      dt: number;
+      main: {
+        temp: number;
+        feels_like: number;
+        temp_min: number;
+        temp_max: number;
+        pressure: number;
+        sea_level: number;
+        grnd_level: number;
+        humidity: number;
+        temp_kf: number;
+      };
+      weather: [
+        {
+          id: number;
+          main: string;
+          description: string;
+          icon: string;
+        }
+      ];
+      clouds: {
+        all: number;
+      };
+      wind: {
+        speed: number;
+        deg: number;
+        gust: number;
+      };
+      visibility: number;
+      pop: number;
+      rain: {
+        [duration: string]: number;
+      };
+    }
+  ];
+  city: {
+    id: number;
+    name: string;
+    coord: {
+      lat: number;
+      lon: number;
+    };
+    country: string;
+    population: number;
+    timezone: number;
+    sunrise: number;
+    sunset: number;
+  };
 }

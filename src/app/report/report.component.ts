@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { WeatherReport } from '../weather.service';
 
 @Component({
@@ -9,8 +9,8 @@ export class ReportComponent implements OnInit {
   @Input()
   report: WeatherReport;
 
-  @Input()
-  zipCode: string;
+  @Output()
+  delete = new EventEmitter<WeatherReport>();
 
   constructor() {}
 

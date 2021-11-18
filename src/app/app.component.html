@@ -1,3 +1,5 @@
+<router-outlet></router-outlet>
+
 <div class="container-fluid">
   <div class="well">
     <h2>Enter a zipcode:</h2>
@@ -19,26 +21,10 @@
   </div>
   <div>
     <app-report
-      *ngFor="let row of reports"
-      [zipCode]="row.zipCode"
-      [report]="row.report"
+      *ngFor="let report of reports"
+      [report]="report"
+      (delete)="deleteReport($event)"
     ></app-report>
-
-    <div class="well flex">
-      <div>
-        <h3>Rancho Cordova (95742)</h3>
-        <h4>Current conditions: Clouds</h4>
-        <h4>Temperatures today:</h4>
-        <p>Current 58 - Max 65 - Min 48</p>
-        <p>
-          <a href="/forecast/95742">Show 5-day forecast for Rancho Cordova</a>
-        </p>
-      </div>
-      <div>
-        <span class="close">×</span>
-        <img src="https://www.angulartraining.com/images/weather/sun.png" />
-      </div>
-    </div>
   </div>
 </div>
 <hr />
