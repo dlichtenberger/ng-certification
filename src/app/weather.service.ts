@@ -41,6 +41,45 @@ abstract class AbstractWeatherService {
     );
   }
 
+  forecastByZip(zipCode: string): Observable<Forecast> {
+    return this.getForecastForZip(zipCode).pipe(
+      // convert successful responses to Forecast
+      map((response) => ({
+        valid: true,
+        name: response.city.name,
+        zipCode: zipCode,
+        weather: this.toForecastEntries(response),
+      }))
+    );
+  }
+
+  private toForecastEntries(response: ForecastResponse): ForecastEntry[] {
+    let today = new Date();
+
+    let entries: ForecastEntry[] = response.list.map((entry) => ({
+      date: new Date(entry.dt * 1000),
+      conditions: entry.weather[0].main,
+      icon: CONDITION_ICONS[entry.weather[0].main] || WeatherIcon.SUN,
+      temperature: {
+        minimum: entry.main.temp_min,
+        maximum: entry.main.temp_max,
+      },
+    }));
+
+    let result: ForecastEntry[] = [];
+    for (let entry of entries) {
+      console.log(entry.date.getUTCHours());
+      if (
+        entry.date.getDay() !== today.getDay() &&
+        entry.date.getUTCHours() === 12
+      ) {
+        result.push(entry);
+      }
+    }
+
+    return result;
+  }
+
   protected abstract getReportForZip(
     zipCode: string
   ): Observable<WeatherResponse>;
@@ -109,17 +148,18 @@ export interface WeatherReport {
 export interface Forecast {
   zipCode: string;
   name: string;
-  weather: [
-    {
-      date: Date;
-      conditions: string;
-      icon: WeatherIcon;
-      temperature: {
-        minimum: number;
-        maximum: number;
-      };
-    }
-  ];
+  valid: boolean;
+  weather: ForecastEntry[];
+}
+
+export interface ForecastEntry {
+  date: Date;
+  conditions: string;
+  icon: WeatherIcon;
+  temperature: {
+    minimum: number;
+    maximum: number;
+  };
 }
 
 export enum WeatherIcon {
@@ -188,43 +228,41 @@ interface ForecastResponse {
   cod: number;
   message: number;
   cnt: number;
-  list: [
-    {
-      dt: number;
-      main: {
-        temp: number;
-        feels_like: number;
-        temp_min: number;
-        temp_max: number;
-        pressure: number;
-        sea_level: number;
-        grnd_level: number;
-        humidity: number;
-        temp_kf: number;
-      };
-      weather: [
-        {
-          id: number;
-          main: string;
-          description: string;
-          icon: string;
-        }
-      ];
-      clouds: {
-        all: number;
-      };
-      wind: {
-        speed: number;
-        deg: number;
-        gust: number;
-      };
-      visibility: number;
-      pop: number;
-      rain: {
-        [duration: string]: number;
-      };
-    }
-  ];
+  list: Array<{
+    dt: number;
+    main: {
+      temp: number;
+      feels_like: number;
+      temp_min: number;
+      temp_max: number;
+      pressure: number;
+      sea_level: number;
+      grnd_level: number;
+      humidity: number;
+      temp_kf: number;
+    };
+    weather: [
+      {
+        id: number;
+        main: string;
+        description: string;
+        icon: string;
+      }
+    ];
+    clouds: {
+      all: number;
+    };
+    wind: {
+      speed: number;
+      deg: number;
+      gust: number;
+    };
+    visibility: number;
+    pop: number;
+    rain: {
+      [duration: string]: number;
+    };
+  }>;
   city: {
     id: number;
     name: string;

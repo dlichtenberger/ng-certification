@@ -5,12 +5,12 @@
       <h4>Current conditions: {{ report.conditions }}</h4>
       <h4>Temperatures today:</h4>
       <p>
-        Current {{ report.temperature.current }}
+        Current {{ report.temperature.current | number: '1.0-0' }}
         <span *ngIf="report.temperature.maximum"
-          >- Max {{ report.temperature.maximum }}
+          >- Max {{ report.temperature.maximum | number: '1.0-0' }}
         </span>
         <span *ngIf="report.temperature.minimum"
-          >- Min {{ report.temperature.minimum }}
+          >- Min {{ report.temperature.minimum | number: '1.0-0' }}
         </span>
       </p>
       <p>

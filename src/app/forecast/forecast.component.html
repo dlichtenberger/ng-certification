@@ -1,0 +1,20 @@
+<div *ngIf="forecast.valid" class="container-fluid">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">5-day forecast for {{ forecast.name }}</h3>
+    </div>
+    <ul class="list-group">
+      <!---->
+      <li *ngFor="let row of forecast.weather" class="list-group-item">
+        {{ row.date | date }}: {{ row.conditions }} - Min:
+        {{ row.temperature.minimum | number: '1.0-0' }} - Max:
+        {{ row.temperature.maximum | number: '1.0-0' }}
+
+        <img class="icon" [src]="row.icon" />
+      </li>
+    </ul>
+  </div>
+  <a class="btn btn-success" tabindex="0" id="mainPageBtn" routerLink="">
+    &lt; Back to main page
+  </a>
+</div>
