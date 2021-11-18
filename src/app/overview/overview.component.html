@@ -1,0 +1,27 @@
+<div class="container-fluid">
+  <div class="well">
+    <h2>Enter a zipcode:</h2>
+    <input
+      class="form-control"
+      placeholder="Zipcode"
+      type="text"
+      id="addLocation"
+      [(ngModel)]="zipCodeInput"
+    />
+    <br />
+    <button
+      class="btn btn-primary"
+      id="addLocationBtn"
+      (click)="addZipCodeInput()"
+    >
+      Add location
+    </button>
+  </div>
+  <div>
+    <app-report
+      *ngFor="let report of reports"
+      [report]="report"
+      (delete)="deleteReport($event)"
+    ></app-report>
+  </div>
+</div>

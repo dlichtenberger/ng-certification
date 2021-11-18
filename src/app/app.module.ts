@@ -9,11 +9,12 @@ import { HerokuWeatherService, WeatherService } from './weather.service';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing/app-routing.module';
 import { ForecastComponent } from './forecast/forecast.component';
+import { OverviewComponent } from './overview/overview.component';
 
 
 @NgModule({
   imports: [BrowserModule, FormsModule, HttpClientModule, AppRoutingModule],
-  declarations: [AppComponent, ReportComponent, ForecastComponent],
+  declarations: [AppComponent, ReportComponent, ForecastComponent, OverviewComponent],
   bootstrap: [AppComponent],
   providers: [
     WeatherService,
