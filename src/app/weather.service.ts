@@ -44,12 +44,23 @@ abstract class AbstractWeatherService {
   forecastByZip(zipCode: string): Observable<Forecast> {
     return this.getForecastForZip(zipCode).pipe(
       // convert successful responses to Forecast
-      map((response) => ({
-        valid: true,
-        name: response.city.name,
-        zipCode: zipCode,
-        weather: this.toForecastEntries(response),
-      }))
+      map(
+        (response) => ({
+          valid: true,
+          name: response.city.name,
+          zipCode: zipCode,
+          weather: this.toForecastEntries(response),
+        }),
+        catchError((error) =>
+          of({
+            valid: false,
+            errorMessage: `${error.status} - ${error.error?.message}`,
+            name: '',
+            zipCode: zipCode,
+            weather: [],
+          })
+        )
+      )
     );
   }
 

@@ -22,7 +22,7 @@
 
     <div *ngIf="!report.valid">
       <h3>{{ report.zipCode }}</h3>
-      <p>Failed to retrieve weather information: {{ report.errorMessage }}</p>
+      <p *ngIf="report.errorMessage">Failed to retrieve weather information: {{ report.errorMessage }}</p>
     </div>
   </div>
   <div>
