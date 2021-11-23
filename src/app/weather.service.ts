@@ -110,13 +110,17 @@ export class WeatherService extends AbstractWeatherService {
 
   protected getReportForZip(zipCode: string): Observable<WeatherResponse> {
     return this.http.get<WeatherResponse>(
-      `${this.API_URL}/weather?zip=${zipCode}&appid=${this.APP_ID}&units=imperial`
+      `${this.API_URL}/weather?zip=${encodeURIComponent(
+        zipCode
+      )}&appid=${encodeURIComponent(this.APP_ID)}&units=imperial`
     );
   }
 
   protected getForecastForZip(zipCode: string): Observable<ForecastResponse> {
     return this.http.get<ForecastResponse>(
-      `${this.API_URL}/forecast?zip=${zipCode}&appid=${this.APP_ID}&units=imperial`
+      `${this.API_URL}/forecast?zip=${encodeURIComponent(
+        zipCode
+      )}&appid=${encodeURIComponent(this.APP_ID)}&units=imperial`
     );
   }
 }
@@ -131,7 +135,7 @@ export class HerokuWeatherService extends AbstractWeatherService {
 
   protected getReportForZip(zipCode: string): Observable<WeatherResponse> {
     return this.http.get<WeatherResponse>(
-      `${this.API_URL}/weather?zipCode=${zipCode}`
+      `${this.API_URL}/weather?zipCode=${encodeURIComponent(zipCode)}`
     );
   }
 

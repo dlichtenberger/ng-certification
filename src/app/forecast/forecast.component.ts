@@ -21,7 +21,7 @@ export class ForecastComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // retrieve ZIP code from URI parameter and request forecase
+    // retrieve ZIP code from URI parameter and request forecast
     let zipCode = this.route.snapshot.paramMap.get('zipCode');
     this.weatherService
       .forecastByZip(zipCode)
