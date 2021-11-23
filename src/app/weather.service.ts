@@ -79,7 +79,6 @@ abstract class AbstractWeatherService {
 
     let result: ForecastEntry[] = [];
     for (let entry of entries) {
-      console.log(entry.date.getUTCHours());
       if (
         entry.date.getDay() !== today.getDay() &&
         entry.date.getUTCHours() === 12
